@@ -1,0 +1,41 @@
+name: appointments/dotnet
+
+on:
+  pull_request:
+    paths:
+      - appointments/dotnet/**
+      - .github/workflows/appointments-dotnet.yml
+  push:
+    paths:
+      - appointments/dotnet/**
+      - .github/workflows/appointments-dotnet.yml
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: appointments/dotnet
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: salon
+          POSTGRES_PASSWORD: salon
+          POSTGRES_DB: salon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U salon -d salon"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: appointments/dotnet/global.json
+      - run: dotnet build
+      - name: Migrate and seed
+        run: dotnet run --no-build --project tools/Seed
+      - run: dotnet publish src/Salon -c Release -o publish

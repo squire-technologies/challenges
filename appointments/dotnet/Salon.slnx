@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Salon/Salon.csproj" />
+  <Project Path="tools/Seed/Seed.csproj" />
+</Solution>

@@ -2,7 +2,7 @@ name: dispatch
 
 on:
   workflow_run:
-    workflows: [appointments/node, appointments/java]
+    workflows: [appointments/node, appointments/java, appointments/dotnet]
     types: [completed]
 
 permissions: {}
@@ -19,7 +19,10 @@ jobs:
           REPO: ${{ secrets.DISPATCH_REPO }}
           SHA: ${{ github.event.workflow_run.head_sha }}
           BRANCH: ${{ github.event.workflow_run.head_branch }}
-          PROJECT: ${{ github.event.workflow_run.name == 'appointments/java' && 'java' || 'node' }}
+          PROJECT: >-
+            ${{ github.event.workflow_run.name == 'appointments/java' && 'java' ||
+            github.event.workflow_run.name == 'appointments/dotnet' && 'dotnet' ||
+            'node' }}
         run: >-
           gh api "repos/$REPO/dispatches"
           -f event_type=check-bookings
