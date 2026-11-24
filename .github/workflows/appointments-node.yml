@@ -6,7 +6,6 @@ on:
       - appointments/node/**
       - .github/workflows/appointments-node.yml
   push:
-    branches: [main]
     paths:
       - appointments/node/**
       - .github/workflows/appointments-node.yml

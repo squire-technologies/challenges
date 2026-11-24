@@ -6,7 +6,6 @@ on:
       - appointments/java/**
       - .github/workflows/appointments-java.yml
   push:
-    branches: [main]
     paths:
       - appointments/java/**
       - .github/workflows/appointments-java.yml

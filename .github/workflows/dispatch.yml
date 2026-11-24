@@ -1,0 +1,28 @@
+name: dispatch
+
+on:
+  workflow_run:
+    workflows: [appointments/node, appointments/java]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  dispatch:
+    if: github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    environment: ci
+    steps:
+      - name: Dispatch
+        env:
+          GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+          REPO: ${{ secrets.DISPATCH_REPO }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          PROJECT: ${{ github.event.workflow_run.name == 'appointments/java' && 'java' || 'node' }}
+        run: >-
+          gh api "repos/$REPO/dispatches"
+          -f event_type=check-bookings
+          -f "client_payload[ref]=$SHA"
+          -f "client_payload[branch]=$BRANCH"
+          -f "client_payload[project]=$PROJECT"
